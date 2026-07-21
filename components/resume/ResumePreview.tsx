@@ -46,7 +46,7 @@ export default function ResumePreview({ resumeDataState }: Props) {
   const handleDownloadPdf = async () => {
     setIsExporting(true);
     const fileName = `${resumeData.personalInfo.fullName.replaceAll(" ", "_") || "resume"}_CV.pdf`;
-    await exportToPdf("resume-preview-document", fileName);
+    await exportToPdf("resume-preview-document", fileName, resumeData, config);
     setIsExporting(false);
   };
 
