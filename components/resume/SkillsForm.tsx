@@ -1,18 +1,48 @@
 "use client";
 
+import { useState } from "react";
 import { SkillItem } from "@/types/resume";
-import { Wrench, Plus, Trash2 } from "lucide-react";
+import { getAiSkillSuggestions } from "@/lib/ai";
+import { Wrench, Plus, Trash2, Sparkles, Loader2 } from "lucide-react";
 
 interface Props {
   data: SkillItem[];
   onChange: (list: SkillItem[]) => void;
 }
 
+const defaultSuggestions = [
+  "React.js",
+  "TypeScript",
+  "Next.js",
+  "Node.js",
+  "Tailwind CSS",
+  "REST APIs",
+  "GraphQL",
+  "Git",
+  "Docker",
+  "SQL",
+  "Agile/Scrum",
+];
+
 export default function SkillsForm({ data, onChange }: Props) {
+  const [suggestions, setSuggestions] = useState<string[]>(defaultSuggestions);
+  const [isLoadingAi, setIsLoadingAi] = useState<boolean>(false);
+
   const handleAddItem = () => {
     const newItem: SkillItem = {
       id: `sk-${Date.now()}`,
       name: "",
+      level: "Advanced",
+      category: "Technical",
+    };
+    onChange([...data, newItem]);
+  };
+
+  const handleAddSuggestedSkill = (skillName: string) => {
+    if (data.some((s) => s.name.toLowerCase() === skillName.toLowerCase())) return;
+    const newItem: SkillItem = {
+      id: `sk-${Date.now()}-${Math.random().toString(36).substring(2, 5)}`,
+      name: skillName,
       level: "Advanced",
       category: "Technical",
     };
@@ -26,6 +56,13 @@ export default function SkillsForm({ data, onChange }: Props) {
 
   const handleRemoveItem = (id: string) => {
     onChange(data.filter((item) => item.id !== id));
+  };
+
+  const handleFetchAiSuggestions = async () => {
+    setIsLoadingAi(true);
+    const res = await getAiSkillSuggestions("Software Engineer");
+    setSuggestions(res.hardSkills);
+    setIsLoadingAi(false);
   };
 
   return (
@@ -43,11 +80,51 @@ export default function SkillsForm({ data, onChange }: Props) {
         <button
           type="button"
           onClick={handleAddItem}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm transition-all"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm transition-all duration-200 hover:scale-[1.03] active:scale-95 cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           Add Skill
         </button>
+      </div>
+
+      {/* AI Quick Skill Suggestions Bar */}
+      <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700 space-y-2">
+        <div className="flex items-center justify-between">
+          <span className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
+            Quick AI Skill Recommendations (1-Click Add):
+          </span>
+
+          <button
+            type="button"
+            onClick={handleFetchAiSuggestions}
+            disabled={isLoadingAi}
+            className="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer"
+          >
+            {isLoadingAi ? "Refreshing..." : "Refresh Suggestions"}
+          </button>
+        </div>
+
+        <div className="flex flex-wrap gap-1.5 pt-1">
+          {suggestions.map((skill) => {
+            const isAdded = data.some((s) => s.name.toLowerCase() === skill.toLowerCase());
+            return (
+              <button
+                key={skill}
+                type="button"
+                disabled={isAdded}
+                onClick={() => handleAddSuggestedSkill(skill)}
+                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all duration-200 ${
+                  isAdded
+                    ? "bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 cursor-default opacity-70"
+                    : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:border-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:scale-105 active:scale-95 cursor-pointer shadow-2xs"
+                }`}
+              >
+                {isAdded ? `✓ ${skill}` : `+ ${skill}`}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {data.length === 0 ? (
@@ -57,7 +134,7 @@ export default function SkillsForm({ data, onChange }: Props) {
           <button
             type="button"
             onClick={handleAddItem}
-            className="mt-3 text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"
+            className="mt-3 text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer inline-block"
           >
             + Add key skills
           </button>
@@ -67,7 +144,7 @@ export default function SkillsForm({ data, onChange }: Props) {
           {data.map((item) => (
             <div
               key={item.id}
-              className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 space-y-3 relative group"
+              className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 space-y-3 relative group transition-all duration-200 hover:border-slate-300 dark:hover:border-slate-700"
             >
               <div className="flex items-center justify-between gap-2">
                 <input
@@ -80,7 +157,7 @@ export default function SkillsForm({ data, onChange }: Props) {
                 <button
                   type="button"
                   onClick={() => handleRemoveItem(item.id)}
-                  className="text-slate-400 hover:text-rose-500 transition-colors p-1"
+                  className="text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/50 p-1.5 rounded-lg transition-all duration-200 hover:scale-110 active:scale-90 cursor-pointer"
                   title="Remove skill"
                 >
                   <Trash2 className="w-4 h-4" />

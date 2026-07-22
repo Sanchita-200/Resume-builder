@@ -42,7 +42,7 @@ export default function LanguagesForm({ data, onChange }: Props) {
         <button
           type="button"
           onClick={handleAddItem}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm transition-all"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm transition-all duration-200 hover:scale-[1.03] active:scale-95 cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           Add Language
@@ -56,7 +56,7 @@ export default function LanguagesForm({ data, onChange }: Props) {
           <button
             type="button"
             onClick={handleAddItem}
-            className="mt-3 text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"
+            className="mt-3 text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer inline-block"
           >
             + Add language
           </button>
@@ -66,7 +66,7 @@ export default function LanguagesForm({ data, onChange }: Props) {
           {data.map((item) => (
             <div
               key={item.id}
-              className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 space-y-3 relative group"
+              className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 space-y-3 relative group transition-all duration-200 hover:border-slate-300 dark:hover:border-slate-700"
             >
               <div className="flex items-center justify-between gap-2">
                 <input
@@ -79,7 +79,7 @@ export default function LanguagesForm({ data, onChange }: Props) {
                 <button
                   type="button"
                   onClick={() => handleRemoveItem(item.id)}
-                  className="text-slate-400 hover:text-rose-500 transition-colors p-1"
+                  className="text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/50 p-1.5 rounded-lg transition-all duration-200 hover:scale-110 active:scale-90 cursor-pointer"
                   title="Remove language"
                 >
                   <Trash2 className="w-4 h-4" />

@@ -79,7 +79,7 @@ export default function ResumePreview({ resumeDataState }: Props) {
             <select
               value={config.template}
               onChange={(e) => setTemplate(e.target.value as TemplateId)}
-              className="px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500"
+              className="px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer transition-all hover:bg-slate-100 dark:hover:bg-slate-700"
             >
               {templatesList.map((tmpl) => (
                 <option key={tmpl.id} value={tmpl.id}>
@@ -100,8 +100,8 @@ export default function ResumePreview({ resumeDataState }: Props) {
                   type="button"
                   onClick={() => setAccentColor(color.id)}
                   title={color.name}
-                  className={`w-5 h-5 rounded-full ${color.bgClass} transition-transform ${
-                    config.accentColor === color.id ? "ring-2 ring-indigo-500 ring-offset-2 scale-110" : "hover:scale-105"
+                  className={`w-5 h-5 rounded-full ${color.bgClass} cursor-pointer transition-all duration-200 hover:scale-125 active:scale-90 ${
+                    config.accentColor === color.id ? "ring-2 ring-indigo-500 ring-offset-2 scale-110 shadow-sm" : "hover:shadow-xs"
                   }`}
                 />
               ))}
@@ -114,7 +114,7 @@ export default function ResumePreview({ resumeDataState }: Props) {
               type="button"
               onClick={handleDownloadPdf}
               disabled={isExporting}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm shadow-indigo-500/20 transition-all disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm shadow-indigo-500/20 transition-all duration-200 hover:scale-[1.03] active:scale-95 disabled:opacity-50 disabled:transform-none cursor-pointer"
             >
               {isExporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
               <span>{isExporting ? "Exporting..." : "Download PDF"}</span>
@@ -123,7 +123,7 @@ export default function ResumePreview({ resumeDataState }: Props) {
             <button
               type="button"
               onClick={triggerBrowserPrint}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-all duration-200 hover:scale-[1.03] active:scale-95 cursor-pointer"
             >
               <Printer className="w-4 h-4" />
               <span>Print</span>
@@ -144,7 +144,8 @@ export default function ResumePreview({ resumeDataState }: Props) {
       <div className="w-full overflow-x-auto p-2 sm:p-4 bg-slate-200/50 dark:bg-slate-900/50 rounded-2xl border border-slate-200/60 dark:border-slate-800 flex justify-center">
         <div
           id="resume-preview-document"
-          className="resume-paper bg-white text-slate-900 overflow-hidden shadow-2xl rounded-sm transition-all"
+          key={`${config.template}-${config.accentColor}`}
+          className="resume-paper bg-white text-slate-900 overflow-hidden shadow-2xl rounded-sm animate-template-swap"
         >
           {renderSelectedTemplate()}
         </div>

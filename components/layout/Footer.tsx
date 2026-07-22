@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { FileText, Heart, Code } from "lucide-react";
+import { FileText, Code } from "lucide-react";
 
 export default function Footer() {
   return (
@@ -9,12 +9,8 @@ export default function Footer() {
           <div className="p-1.5 bg-indigo-600 rounded-lg text-white">
             <FileText className="w-4 h-4" />
           </div>
-          <span>Resume Builder</span>
+          <span>AI Resume Builder</span>
         </div>
-
-        <p className="text-sm flex items-center gap-1">
-          Built with <Heart className="w-4 h-4 text-rose-500 fill-rose-500" /> using Next.js 15 & Tailwind CSS. Client-side privacy guaranteed.
-        </p>
 
         <div className="flex items-center gap-4 text-sm font-medium">
           <Link href="/builder" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
@@ -27,7 +23,7 @@ export default function Footer() {
             className="flex items-center gap-1 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
           >
             <Code className="w-4 h-4" />
-            
+            <span>GitHub</span>
           </a>
         </div>
       </div>

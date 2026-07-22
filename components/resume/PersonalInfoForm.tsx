@@ -1,10 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { personalInfoSchema } from "@/schemas/resume";
 import { PersonalInfo } from "@/types/resume";
-import { User, Mail, Phone, MapPin, Globe, FileText, Share2, Code } from "lucide-react";
+import { generateAiSummary } from "@/lib/ai";
+import { User, Mail, Phone, MapPin, Globe, FileText, Share2, Code, Sparkles, Loader2 } from "lucide-react";
 
 interface Props {
   data: PersonalInfo;
@@ -12,6 +14,8 @@ interface Props {
 }
 
 export default function PersonalInfoForm({ data, onChange }: Props) {
+  const [isGeneratingAi, setIsGeneratingAi] = useState(false);
+
   const {
     register,
     formState: { errors },
@@ -23,6 +27,13 @@ export default function PersonalInfoForm({ data, onChange }: Props) {
 
   const handleFieldChange = (field: keyof PersonalInfo, value: string) => {
     onChange({ ...data, [field]: value });
+  };
+
+  const handleAiSummaryClick = async () => {
+    setIsGeneratingAi(true);
+    const summary = await generateAiSummary(data.jobTitle || "Software Engineer", data.summary);
+    handleFieldChange("summary", summary);
+    setIsGeneratingAi(false);
   };
 
   return (
@@ -191,9 +202,20 @@ export default function PersonalInfoForm({ data, onChange }: Props) {
       </div>
 
       <div>
-        <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-          Professional Summary *
-        </label>
+        <div className="flex items-center justify-between mb-1">
+          <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
+            Professional Summary *
+          </label>
+          <button
+            type="button"
+            onClick={handleAiSummaryClick}
+            disabled={isGeneratingAi}
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 rounded-lg transition-all duration-200 hover:scale-[1.02] active:scale-95 disabled:opacity-50 cursor-pointer"
+          >
+            {isGeneratingAi ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
+            <span>{isGeneratingAi ? "Writing..." : "Generate AI Summary"}</span>
+          </button>
+        </div>
         <textarea
           rows={4}
           {...register("summary")}

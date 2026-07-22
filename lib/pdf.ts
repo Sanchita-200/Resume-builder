@@ -11,13 +11,24 @@ const rgbColors: Record<AccentColor, [number, number, number]> = {
   violet: [124, 58, 237],
 };
 
+function sanitizePdfText(str: string): string {
+  if (!str) return "";
+  return str
+    .replace(/•/g, "-")
+    .replace(/—/g, "-")
+    .replace(/–/g, "-")
+    .replace(/“/g, '"')
+    .replace(/”/g, '"')
+    .replace(/‘/g, "'")
+    .replace(/’/g, "'");
+}
+
 export async function exportToPdf(
   elementId: string,
   filename = "resume.pdf",
   data?: ResumeData,
   config?: ResumeConfig
 ): Promise<void> {
-  // Option 1: Direct Vector PDF Generation from data (Fastest, High Resolution, 100% Reliable)
   if (data) {
     try {
       const pdf = new jsPDF({
@@ -37,21 +48,21 @@ export async function exportToPdf(
       // Full Name
       pdf.setFont("helvetica", "bold");
       pdf.setFontSize(22);
-      pdf.setTextColor(15, 23, 42); // slate-900
-      pdf.text(data.personalInfo.fullName || "Your Full Name", margin, y + 4);
+      pdf.setTextColor(15, 23, 42);
+      pdf.text(sanitizePdfText(data.personalInfo.fullName || "Your Full Name"), margin, y + 4);
       y += 10;
 
       // Job Title
       pdf.setFont("helvetica", "bold");
       pdf.setFontSize(11);
       pdf.setTextColor(r, g, b);
-      pdf.text(data.personalInfo.jobTitle || "Professional Title", margin, y);
+      pdf.text(sanitizePdfText(data.personalInfo.jobTitle || "Professional Title"), margin, y);
       y += 6;
 
       // Contact Information Bar
       pdf.setFont("helvetica", "normal");
       pdf.setFontSize(8.5);
-      pdf.setTextColor(71, 85, 105); // slate-600
+      pdf.setTextColor(71, 85, 105);
 
       const contactParts = [
         data.personalInfo.email,
@@ -60,10 +71,12 @@ export async function exportToPdf(
         data.personalInfo.website,
         data.personalInfo.linkedin,
         data.personalInfo.github,
-      ].filter(Boolean);
+      ]
+        .filter(Boolean)
+        .map((item) => sanitizePdfText(item || ""));
 
       if (contactParts.length > 0) {
-        const contactStr = contactParts.join("  •  ");
+        const contactStr = contactParts.join("  |  ");
         const contactLines = pdf.splitTextToSize(contactStr, pageWidth - margin * 2);
         pdf.text(contactLines, margin, y);
         y += contactLines.length * 4 + 2;
@@ -86,7 +99,7 @@ export async function exportToPdf(
         pdf.setTextColor(r, g, b);
         pdf.text(title.toUpperCase(), margin, y);
         y += 2;
-        pdf.setDrawColor(226, 232, 240); // slate-200
+        pdf.setDrawColor(226, 232, 240);
         pdf.setLineWidth(0.4);
         pdf.line(margin, y, pageWidth - margin, y);
         y += 5;
@@ -99,7 +112,8 @@ export async function exportToPdf(
         pdf.setFontSize(9);
         pdf.setTextColor(30, 41, 59);
 
-        const lines = pdf.splitTextToSize(data.personalInfo.summary, pageWidth - margin * 2);
+        const cleanSummary = sanitizePdfText(data.personalInfo.summary);
+        const lines = pdf.splitTextToSize(cleanSummary, pageWidth - margin * 2);
         pdf.text(lines, margin, y);
         y += lines.length * 4 + 4;
       }
@@ -114,33 +128,30 @@ export async function exportToPdf(
             y = margin;
           }
 
-          // Role title
           pdf.setFont("helvetica", "bold");
           pdf.setFontSize(9.5);
           pdf.setTextColor(15, 23, 42);
-          pdf.text(exp.position, margin, y);
+          pdf.text(sanitizePdfText(exp.position), margin, y);
 
-          // Dates
-          const dateStr = `${exp.startDate} – ${exp.current ? "Present" : exp.endDate}`;
+          const dateStr = sanitizePdfText(`${exp.startDate} - ${exp.current ? "Present" : exp.endDate}`);
           pdf.setFont("helvetica", "normal");
           pdf.setFontSize(8.5);
           pdf.setTextColor(100, 116, 139);
           pdf.text(dateStr, pageWidth - margin, y, { align: "right" });
           y += 4;
 
-          // Company & Location
           pdf.setFont("helvetica", "bold");
           pdf.setFontSize(8.5);
           pdf.setTextColor(71, 85, 105);
-          const companyLoc = exp.company + (exp.location ? ` | ${exp.location}` : "");
+          const companyLoc = sanitizePdfText(exp.company + (exp.location ? ` | ${exp.location}` : ""));
           pdf.text(companyLoc, margin, y);
           y += 4.5;
 
-          // Description Bullets / Paragraph
           pdf.setFont("helvetica", "normal");
           pdf.setFontSize(8.5);
           pdf.setTextColor(30, 41, 59);
-          const descLines = pdf.splitTextToSize(exp.description, pageWidth - margin * 2);
+          const cleanDesc = sanitizePdfText(exp.description);
+          const descLines = pdf.splitTextToSize(cleanDesc, pageWidth - margin * 2);
           pdf.text(descLines, margin, y);
           y += descLines.length * 3.8 + 4;
         });
@@ -159,20 +170,21 @@ export async function exportToPdf(
           pdf.setFont("helvetica", "bold");
           pdf.setFontSize(9.5);
           pdf.setTextColor(15, 23, 42);
-          pdf.text(proj.title, margin, y);
+          pdf.text(sanitizePdfText(proj.title), margin, y);
 
           if (proj.techStack) {
             pdf.setFont("helvetica", "normal");
             pdf.setFontSize(8);
             pdf.setTextColor(100, 116, 139);
-            pdf.text(proj.techStack, pageWidth - margin, y, { align: "right" });
+            pdf.text(sanitizePdfText(proj.techStack), pageWidth - margin, y, { align: "right" });
           }
           y += 4;
 
           pdf.setFont("helvetica", "normal");
           pdf.setFontSize(8.5);
           pdf.setTextColor(30, 41, 59);
-          const descLines = pdf.splitTextToSize(proj.description, pageWidth - margin * 2);
+          const cleanDesc = sanitizePdfText(proj.description);
+          const descLines = pdf.splitTextToSize(cleanDesc, pageWidth - margin * 2);
           pdf.text(descLines, margin, y);
           y += descLines.length * 3.8 + 4;
         });
@@ -191,9 +203,9 @@ export async function exportToPdf(
           pdf.setFont("helvetica", "bold");
           pdf.setFontSize(9.5);
           pdf.setTextColor(15, 23, 42);
-          pdf.text(`${edu.degree} in ${edu.fieldOfStudy}`, margin, y);
+          pdf.text(sanitizePdfText(`${edu.degree} in ${edu.fieldOfStudy}`), margin, y);
 
-          const eduDate = `${edu.startDate} – ${edu.endDate}`;
+          const eduDate = sanitizePdfText(`${edu.startDate} - ${edu.endDate}`);
           pdf.setFont("helvetica", "normal");
           pdf.setFontSize(8.5);
           pdf.setTextColor(100, 116, 139);
@@ -203,7 +215,7 @@ export async function exportToPdf(
           pdf.setFont("helvetica", "normal");
           pdf.setFontSize(8.5);
           pdf.setTextColor(71, 85, 105);
-          pdf.text(edu.institution + (edu.location ? ` | ${edu.location}` : ""), margin, y);
+          pdf.text(sanitizePdfText(edu.institution + (edu.location ? ` | ${edu.location}` : "")), margin, y);
           y += 4.5;
         });
       }
@@ -215,7 +227,7 @@ export async function exportToPdf(
         pdf.setFontSize(8.5);
         pdf.setTextColor(30, 41, 59);
 
-        const skillNames = data.skills.map((s) => s.name).join("  •  ");
+        const skillNames = data.skills.map((s) => sanitizePdfText(s.name)).join("  |  ");
         const skillLines = pdf.splitTextToSize(skillNames, pageWidth - margin * 2);
         pdf.text(skillLines, margin, y);
         y += skillLines.length * 3.8 + 4;
@@ -229,13 +241,13 @@ export async function exportToPdf(
         pdf.setTextColor(30, 41, 59);
 
         if (data.certifications && data.certifications.length > 0) {
-          const certStr = data.certifications.map((c) => `${c.name} (${c.issuer})`).join("  •  ");
+          const certStr = data.certifications.map((c) => sanitizePdfText(`${c.name} (${c.issuer})`)).join("  |  ");
           pdf.text(`Certifications: ${certStr}`, margin, y);
           y += 4.5;
         }
 
         if (data.languages && data.languages.length > 0) {
-          const langStr = data.languages.map((l) => `${l.name} (${l.proficiency})`).join("  •  ");
+          const langStr = data.languages.map((l) => sanitizePdfText(`${l.name} (${l.proficiency})`)).join("  |  ");
           pdf.text(`Languages: ${langStr}`, margin, y);
           y += 4.5;
         }
@@ -249,7 +261,7 @@ export async function exportToPdf(
     }
   }
 
-  // Fallback to html2canvas DOM rasterization if data is omitted
+  // Fallback DOM rasterization
   const element = document.getElementById(elementId);
   if (!element) return;
 

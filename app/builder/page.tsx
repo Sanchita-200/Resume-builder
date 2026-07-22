@@ -1,14 +1,27 @@
 "use client";
 
+import { useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ResumeForm from "@/components/resume/ResumeForm";
 import ResumePreview from "@/components/resume/ResumePreview";
 import { useResumeData } from "@/hooks/useResumeData";
+import { TemplateId } from "@/types/resume";
 import { Loader2 } from "lucide-react";
 
-export default function BuilderPage() {
+const validTemplates: TemplateId[] = ["modern", "classic", "minimal", "tech", "creative"];
+
+function BuilderContent() {
   const resumeState = useResumeData();
+  const searchParams = useSearchParams();
+  const templateParam = searchParams.get("template") as TemplateId | null;
+
+  useEffect(() => {
+    if (templateParam && validTemplates.includes(templateParam)) {
+      resumeState.setTemplate(templateParam);
+    }
+  }, [templateParam, resumeState.setTemplate]);
 
   if (!resumeState.isLoaded) {
     return (
@@ -41,5 +54,22 @@ export default function BuilderPage() {
 
       <Footer />
     </div>
+  );
+}
+
+export default function BuilderPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 text-slate-600 dark:text-slate-400">
+          <div className="flex items-center gap-2 font-medium text-sm">
+            <Loader2 className="w-5 h-5 animate-spin text-indigo-600" />
+            <span>Loading...</span>
+          </div>
+        </div>
+      }
+    >
+      <BuilderContent />
+    </Suspense>
   );
 }

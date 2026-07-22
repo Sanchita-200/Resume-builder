@@ -1,3 +1,4 @@
+import Link from "next/link";
 import {
   FileText,
   Eye,
@@ -6,6 +7,7 @@ import {
   Save,
   Moon,
   CheckCircle2,
+  ArrowRight,
 } from "lucide-react";
 
 export default function Features() {
@@ -49,11 +51,11 @@ export default function Features() {
   ];
 
   const templatesPreview = [
-    { id: "modern", name: "Modern Crisp", tag: "Most Popular", color: "bg-indigo-600" },
-    { id: "classic", name: "Classic Executive", tag: "ATS Standard", color: "bg-slate-700" },
-    { id: "minimal", name: "Minimalist Clean", tag: "Compact", color: "bg-emerald-600" },
-    { id: "tech", name: "Tech / Developer", tag: "Sidebar Layout", color: "bg-blue-600" },
-    { id: "creative", name: "Creative Accent", tag: "High Impact", color: "bg-purple-600" },
+    { id: "modern", name: "Modern Crisp", tag: "Most Popular", color: "bg-indigo-600 shadow-indigo-500/20" },
+    { id: "classic", name: "Classic Executive", tag: "ATS Standard", color: "bg-slate-700 shadow-slate-500/20" },
+    { id: "minimal", name: "Minimalist Clean", tag: "Compact", color: "bg-emerald-600 shadow-emerald-500/20" },
+    { id: "tech", name: "Tech / Developer", tag: "Sidebar Layout", color: "bg-blue-600 shadow-blue-500/20" },
+    { id: "creative", name: "Creative Accent", tag: "High Impact", color: "bg-purple-600 shadow-purple-500/20" },
   ];
 
   return (
@@ -75,9 +77,9 @@ export default function Features() {
             return (
               <div
                 key={idx}
-                className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow"
+                className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-xl hover:border-indigo-500/40 transition-all duration-300 hover:-translate-y-1.5 group"
               >
-                <div className="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 flex items-center justify-center text-indigo-600 dark:text-indigo-400 mb-5">
+                <div className="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 flex items-center justify-center text-indigo-600 dark:text-indigo-400 mb-5 group-hover:scale-110 transition-transform duration-300">
                   <Icon className="w-6 h-6" />
                 </div>
                 <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
@@ -99,32 +101,39 @@ export default function Features() {
             5 Professional Resume Templates
           </h2>
           <p className="mt-4 text-lg text-slate-600 dark:text-slate-400">
-            Switch templates dynamically with 1 click without losing your resume data.
+            Click any template below to start editing directly with your preferred layout.
           </p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
           {templatesPreview.map((tmpl) => (
-            <div
+            <Link
               key={tmpl.id}
-              className="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex flex-col justify-between hover:border-indigo-500 transition-colors shadow-sm"
+              href={`/builder?template=${tmpl.id}`}
+              className="template-card-hover p-4.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 flex flex-col justify-between hover:border-indigo-500/80 dark:hover:border-indigo-400/80 active:scale-95 shadow-sm group cursor-pointer"
             >
               <div>
-                <div className={`h-32 rounded-lg ${tmpl.color} opacity-90 mb-4 flex items-center justify-center text-white text-xs font-mono font-semibold`}>
-                  {tmpl.name}
+                <div className={`h-36 rounded-xl ${tmpl.color} opacity-95 mb-4 flex flex-col items-center justify-center text-white text-xs font-mono font-semibold transition-all duration-300 group-hover:scale-[1.03] shadow-md p-3 text-center`}>
+                  <span>{tmpl.name}</span>
+                  <span className="mt-2.5 inline-flex items-center gap-1 text-[11px] bg-white/20 hover:bg-white/30 px-2.5 py-1 rounded-lg text-white font-sans backdrop-blur-xs transition-all duration-200 group-hover:scale-105">
+                    Use Template <ArrowRight className="w-3 h-3 transition-transform duration-300 group-hover:translate-x-1" />
+                  </span>
                 </div>
-                <h4 className="font-bold text-slate-900 dark:text-white text-sm">
+                <h4 className="font-bold text-slate-900 dark:text-white text-sm group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                   {tmpl.name}
                 </h4>
                 <span className="mt-1 inline-block text-xs text-indigo-600 dark:text-indigo-400 font-medium">
                   {tmpl.tag}
                 </span>
               </div>
-              <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center gap-1 text-xs text-slate-500">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
-                <span>Ready to use</span>
+              <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500">
+                <div className="flex items-center gap-1">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+                  <span>Select & Edit</span>
+                </div>
+                <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300 text-indigo-600 dark:text-indigo-400" />
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </section>

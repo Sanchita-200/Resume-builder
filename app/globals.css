@@ -3,10 +3,14 @@
 @variant dark (&:where(.dark, .dark *));
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
     background-color: #f8fafc;
     color: #0f172a;
-    transition: background-color 0.2s ease, color 0.2s ease;
+    transition: background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1), color 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .dark body,
@@ -14,6 +18,74 @@
     background-color: #020617 !important;
     color: #f8fafc !important;
   }
+
+  /* Global ultra-smooth interactive feel for buttons, links, inputs & selects */
+  button, a, input, select, textarea {
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  button:active, a:active {
+    transform: scale(0.96);
+  }
+}
+
+/* Animations for click transitions and tab/template switching */
+@keyframes stepFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.985);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes templateSwap {
+  0% {
+    opacity: 0.3;
+    transform: translateY(6px) scale(0.98);
+    filter: blur(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0px);
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(99, 102, 241, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(99, 102, 241, 0.45);
+  }
+}
+
+.animate-step-fade {
+  animation: stepFadeIn 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-template-swap {
+  animation: templateSwap 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.pulse-glow {
+  animation: pulseGlow 3s ease-in-out infinite;
+}
+
+/* Template Card Smooth Interactive Hover Style */
+.template-card-hover {
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.template-card-hover:hover {
+  transform: translateY(-6px) scale(1.03);
+  box-shadow: 0 20px 35px -10px rgba(79, 70, 229, 0.2), 0 10px 15px -5px rgba(0, 0, 0, 0.04);
 }
 
 /* Printable Resume Page Formatting */
@@ -22,7 +94,8 @@
   width: 100%;
   max-width: 800px;
   margin: 0 auto;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.12), 0 10px 15px -5px rgba(0, 0, 0, 0.04);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease, filter 0.4s ease;
 }
 
 /* Print CSS setup */
